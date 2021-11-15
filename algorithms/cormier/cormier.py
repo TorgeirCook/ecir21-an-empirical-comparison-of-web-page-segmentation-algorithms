@@ -1,15 +1,12 @@
-import random
+import argparse
+import json
 import math
-import numpy as np
-from scipy.stats import norm
-from scipy.ndimage import convolve
+import random
 
 import cv2
-
-import sys
-import json
-
-import argparse
+import numpy as np
+from scipy.ndimage import convolve
+from scipy.stats import norm
 
 # Label line directions
 horiz = 0
@@ -20,12 +17,13 @@ dir_v = 1
 v_filter = np.multiply(np.array([[1], [2], [1]]), np.array([[-1, 0, 1]]))
 h_filter = np.transpose(v_filter)
 # Set parameters
-min_l = 15 # Minimum size of a region; also half-window width
-threshold = 0.5 # Threshold probability to accept a line as semantically significant
-prior = 0.01 # Prior probability that a given pixel is an edge
-line_length = 256 # Maximum line segment length for recursion
-mcs_rp = 100 # Trials for Monte Carlo simulation (lower than original papers, but seems to work fine)
-mcs_prob = 0.3 # Minimum proportion of locally significant edges in Monte Carlo trials
+min_l = 15  # Minimum size of a region; also half-window width
+threshold = 0.5  # Threshold probability to accept a line as semantically significant
+prior = 0.01  # Prior probability that a given pixel is an edge
+line_length = 256  # Maximum line segment length for recursion
+mcs_rp = 100  # Trials for Monte Carlo simulation (lower than original papers, but seems to work fine)
+mcs_prob = 0.3  # Minimum proportion of locally significant edges in Monte Carlo trials
+
 
 # Class representing an edge (used for data storage)
 class Edge:
@@ -45,6 +43,7 @@ class Edge:
             self.start_col = start_col
             self.start_row = min(start_row, end_row)
             self.length = max(start_row, end_row) - self.start_row + 1
+
     # Utility function to produce a list of pixel coordinates
     def to_pixels(self):
         pixels = []
@@ -55,6 +54,7 @@ class Edge:
             for cur_row in range(self.start_row, self.start_row + self.length):
                 pixels.append([cur_row, self.start_col])
         return pixels
+
 
 # Class representing a node in a segmentation tree
 class SegmentNode:
@@ -76,6 +76,7 @@ class SegmentNode:
 def to_grayscale(img):
     return np.sum(img[:, :, :3], axis=2, dtype='float')
 
+
 # Perform convolution with Sobel filters and determine the probability that
 # each edge is locally significant
 def sobel(img):
@@ -85,6 +86,7 @@ def sobel(img):
     h, v = cdf(h, v)
     print(np.histogram(h, bins=20))
     return h, v
+
 
 # Calculate CDF of gradient magnitudes
 def cdf(h, v):
@@ -99,23 +101,23 @@ def cdf(h, v):
             bound_l = max(0, j - min_l)
             bound_r = min(nrows, j + min_l + 1)
             local_t = h[bound_t:i, bound_l:bound_r]
-            local_b = h[i+1:bound_b, bound_l:bound_r]
+            local_b = h[i + 1:bound_b, bound_l:bound_r]
             local_l = v[bound_t:bound_b, bound_l:j]
-            local_r = v[bound_t:bound_b, j+1:bound_r]
+            local_r = v[bound_t:bound_b, j + 1:bound_r]
             flat_t, flat_b = local_t.flatten(), local_b.flatten()
             flat_l, flat_r = local_l.flatten(), local_r.flatten()
             count_t, count_b = float(len(flat_t) + 2), float(len(flat_b) + 2)
             count_l, count_r = float(len(flat_l) + 2), float(len(flat_r) + 2)
             target_h, target_v = h[i][j], v[i][j]
-            
+
             lower_t = np.sum(norm.cdf(target_h, flat_t, 0.1))
             lower_b = np.sum(norm.cdf(target_h, flat_b, 0.1))
             lower_l = np.sum(norm.cdf(target_v, flat_l, 0.1))
             lower_r = np.sum(norm.cdf(target_v, flat_r, 0.1))
-            #lower_t = np.sum(np.where(flat_t < target_h, 1.0, 0.0))
-            #lower_b = np.sum(np.where(flat_b < target_h, 1.0, 0.0))
-            #lower_l = np.sum(np.where(flat_l < target_v, 1.0, 0.0))
-            #lower_r = np.sum(np.where(flat_r < target_v, 1.0, 0.0))
+            # lower_t = np.sum(np.where(flat_t < target_h, 1.0, 0.0))
+            # lower_b = np.sum(np.where(flat_b < target_h, 1.0, 0.0))
+            # lower_l = np.sum(np.where(flat_l < target_v, 1.0, 0.0))
+            # lower_r = np.sum(np.where(flat_r < target_v, 1.0, 0.0))
             sig_t = (lower_t + 0.5) / count_t  # 1 - Pr(S_{x,y,s} | !E_{x,y}, P)
             sig_b = (lower_b + 0.5) / count_b
             sig_l = (lower_l + 0.5) / count_l
@@ -133,6 +135,7 @@ def cdf(h, v):
             # res_h[i][j], res_v[i][j] = max(sig_t, sig_b), max(sig_l, sig_r)
     return res_h, res_v
 
+
 # Function to segment a page (image stored in the specified file)
 def segment(filename):
     img = cv2.imread(filename)
@@ -140,8 +143,9 @@ def segment(filename):
     global edge_list
     edge_list = []
     segment_list = segment_rec(horiz, vert, 0, 0, len(horiz), 0, len(horiz[0])).to_list()
-#    print(segment_list)
+    #    print(segment_list)
     return segment_list, img
+
 
 # Function to recursively segment a page
 def segment_rec(h, v, level, t, b, l, r, d=None, empty=False):
@@ -150,19 +154,20 @@ def segment_rec(h, v, level, t, b, l, r, d=None, empty=False):
         return self
     print(level, t, b, l, r, d)
     h_curr, v_curr = h[t:b, l:r], v[t:b, l:r].transpose()
-    h_prob, v_prob = np.ones(len(h_curr) - min_l * 2, dtype='float'), np.ones(len(v_curr) - min_l * 2, dtype='float')
+    h_prob, v_prob = np.ones(abs(len(h_curr) - min_l * 2), dtype='float'), np.ones(abs(len(v_curr) - min_l * 2),
+                                                                                   dtype='float')
     if d is None or d == dir_h:
         for i, row in enumerate(h_curr):
             if i < min_l or i >= len(h_curr) - min_l:
                 continue
             h_prob[i - min_l] = evaluate_line(row)
-        #print(min(h_prob), max(h_prob))
+        # print(min(h_prob), max(h_prob))
     if d is None or d == dir_v:
         for i, col in enumerate(v_curr):
             if i < min_l or i >= len(v_curr) - min_l:
                 continue
             v_prob[i - min_l] = evaluate_line(col)
-        #print(min(v_prob), max(v_prob))
+        # print(min(v_prob), max(v_prob))
     h_pass, v_pass = [], []
     h_max, v_max = 0, 0
     prev = 0
@@ -206,11 +211,13 @@ def segment_rec(h, v, level, t, b, l, r, d=None, empty=False):
         self.children.append(segment_rec(h, v, level + 1, t, b, prev + l, r, dir_h, len(v_pass) == 0))
     return self
 
+
 # Function to estimate the probability that a line is semantically significant
 def evaluate_line(line):
     if len(line) < line_length:
         return monte_carlo_simulation(line)
     return evaluate_line(line[:math.ceil(len(line) / 2)]) * evaluate_line(line[math.ceil(len(line) / 2):])
+
 
 # Function to use a Monte Carlo simulation to estimate the probability that a
 # minimum proportion of the pixels in a line are locally significant
@@ -220,11 +227,12 @@ def monte_carlo_simulation(line):
     for _ in range(mcs_rp):
         sim = np.array([1 if random.random() < p else 0 for p in line], dtype='float')
         total = np.sum(sim) / line_len
-        #if total > mcs_prob:
+        # if total > mcs_prob:
         #    print(total)
         over += 1.0 if (np.sum(sim) / line_len) > mcs_prob else 0.0
-    #print(over)
+    # print(over)
     return over / float(mcs_rp)
+
 
 # Function to show edges in an image
 def _mark_edges(data, edges):
@@ -235,15 +243,18 @@ def _mark_edges(data, edges):
             data[pixel[0]][pixel[1]] = [255, 0, 0]
     return data
 
-edge_list = []
 
+edge_list = []
 
 parser = argparse.ArgumentParser(description='Segmentation algorithm of Cormier et al.')
 parser.add_argument('--image', help="The screenshot of the web page", required=True)
 parser.add_argument('--id', help="The ID of the web page", required=True)
-parser.add_argument('--output', dest="output_directory", help="The output directory for the segmentation", required=True)
-parser.add_argument('--min-l', dest="min_l", type=int, default=min_l, help="The minimum size of a region (default: " + str(min_l) + ")")
-parser.add_argument('--line-length', dest="line_length", type=int, default=line_length, help="The maximum line segment length for recursion (default: " + str(line_length) + ")")
+parser.add_argument('--output', dest="output_directory", help="The output directory for the segmentation",
+                    required=True)
+parser.add_argument('--min-l', dest="min_l", type=int, default=min_l,
+                    help="The minimum size of a region (default: " + str(min_l) + ")")
+parser.add_argument('--line-length', dest="line_length", type=int, default=line_length,
+                    help="The maximum line segment length for recursion (default: " + str(line_length) + ")")
 args = parser.parse_args()
 
 min_l = args.min_l
@@ -255,10 +266,10 @@ try:
 
     polygon_list = []
     for segment in s_list:
-        top     = segment[0]
-        bottom  = segment[1]
-        left    = segment[2]
-        right   = segment[3]
+        top = segment[0]
+        bottom = segment[1]
+        left = segment[2]
+        right = segment[3]
 
         polygon_list.append([[[[left, top], [left, bottom], [right, bottom], [right, top], [left, top]]]])
 
