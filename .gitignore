@@ -3,8 +3,6 @@
 /cikm20-web-page-segmentation-revisited-evaluation-framework-and-dataset/
 /cikm20-web-page-segmentation-revisited-evaluation-framework-and-dataset-master/
 /master.zip
-/cikm20/
-/cikm20
 /webis-webseg-20-000000.zip
 /webis-webseg-20-000000/
 /webis-webseg-20/
@@ -14,3 +12,4 @@ webis-web-archive-17-000000/
 webis-web-archive-17/
 /segmentations/
 /results/
+.idea
