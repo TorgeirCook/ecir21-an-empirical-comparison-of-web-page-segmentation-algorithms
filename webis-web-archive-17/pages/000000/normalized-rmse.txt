@@ -1,0 +1,5 @@
+          archive   custom  warcprox   pywb
+archive    0.0000   0.0663   0.0663   0.0663
+custom     0.0663   0.0000   0.0000   0.0000
+warcprox   0.0663   0.0000   0.0000   0.0000
+pywb       0.0663   0.0000   0.0000   0.0000
