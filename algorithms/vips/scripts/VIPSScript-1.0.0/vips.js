@@ -2410,7 +2410,6 @@ var VipsTester = /** @class */ (function () {
     VipsTester.prototype.main = function (filename, doc) {
         try {
             var vips = new Vips(filename);
-            console.warn("pwn");
             // set permitted degree of coherence
             vips.setPredefinedDoC(doc);
             // start segmentation on page
