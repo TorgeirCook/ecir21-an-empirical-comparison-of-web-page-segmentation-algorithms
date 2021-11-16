@@ -7,14 +7,14 @@ var Box = /** @class */ (function () {
         this.rootelem = false;
         if (this.node.nodeType === Node.ELEMENT_NODE) {
             this.isblock = window.getComputedStyle(this.node).getPropertyValue("display") === "block";
-        }
-        else {
+        } else {
             this.isblock = false;
         }
         this.displayed = true;
         this.visible = true;
         this.splitted = false;
     }
+
     Box.prototype.getNode = function () {
         return this.node;
     };
@@ -38,13 +38,21 @@ var Box = /** @class */ (function () {
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            ({__proto__: []} instanceof Array && function (d, b) {
+                d.__proto__ = b;
+            }) ||
+            function (d, b) {
+                for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+            };
         return extendStatics(d, b);
     };
     return function (d, b) {
         extendStatics(d, b);
-        function __() { this.constructor = d; }
+
+        function __() {
+            this.constructor = d;
+        }
+
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
@@ -54,6 +62,7 @@ var __extends = (this && this.__extends) || (function () {
  */
 var ElementBox = /** @class */ (function (_super) {
     __extends(ElementBox, _super);
+
     function ElementBox(n) {
         var _this = _super.call(this, n) || this;
         if (n != null) {
@@ -71,6 +80,7 @@ var ElementBox = /** @class */ (function (_super) {
         }
         return _this;
     }
+
     ElementBox.prototype.getVisibleElementBoxNested = function (n) {
         var ret = new Array();
         var rec;
@@ -131,6 +141,7 @@ var Point = /** @class */ (function () {
         this.x = x;
         this.y = y;
     }
+
     return Point;
 }());
 ///<reference path="Point.ts"/>
@@ -153,8 +164,7 @@ var Separator = /** @class */ (function () {
                 this.startPoint = leftUpX;
                 this.endPoint = rightDownY;
             }
-        }
-        else {
+        } else {
             this.startPoint = start;
             this.endPoint = end;
         }
@@ -162,6 +172,7 @@ var Separator = /** @class */ (function () {
             this.weight = weight;
         }
     }
+
     Separator.prototype.setLeftUp = function (leftUpX, leftUpY) {
         this.leftUp = new Point(leftUpX, leftUpY);
     };
@@ -176,13 +187,21 @@ var Separator = /** @class */ (function () {
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            ({__proto__: []} instanceof Array && function (d, b) {
+                d.__proto__ = b;
+            }) ||
+            function (d, b) {
+                for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+            };
         return extendStatics(d, b);
     };
     return function (d, b) {
         extendStatics(d, b);
-        function __() { this.constructor = d; }
+
+        function __() {
+            this.constructor = d;
+        }
+
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
@@ -192,6 +211,7 @@ var __extends = (this && this.__extends) || (function () {
  */
 var TextBox = /** @class */ (function (_super) {
     __extends(TextBox, _super);
+
     function TextBox(n) {
         var _this = _super.call(this, n) || this;
         _this.textNode = n;
@@ -200,6 +220,7 @@ var TextBox = /** @class */ (function (_super) {
         _this.collapsews = true;
         return _this;
     }
+
     TextBox.prototype.getText = function () {
         return this.text != null ? this.text.substring(this.textStart, this.textEnd) : "";
     };
@@ -228,14 +249,12 @@ var TextBox = /** @class */ (function (_super) {
                     ret = ret.concat(' ');
                     inws = true;
                 }
-            }
-            else if (this.isLineBreak(ch)) {
+            } else if (this.isLineBreak(ch)) {
                 ret = ret.concat('\r');
                 if (ch === '\r' && i + 1 < src.length && src.charAt(i + 1) === '\n') {
                     ++i;
                 }
-            }
-            else {
+            } else {
                 inws = false;
                 ret = ret.concat(ch);
             }
@@ -255,8 +274,7 @@ var TextBox = /** @class */ (function (_super) {
                     var ch = src.charAt(i);
                     if (/\s/.test(ch)) {
                         ws = true;
-                    }
-                    else {
+                    } else {
                         if (ws) {
                             ch = ch.toUpperCase();
                         }
@@ -272,16 +290,14 @@ var TextBox = /** @class */ (function (_super) {
     TextBox.prototype.isWhitespace = function (ch) {
         if (this.linews) {
             return /\s/.test(ch) && (!(ch === '\r' || ch === '\n'));
-        }
-        else {
+        } else {
             return /\s/.test(ch);
         }
     };
     TextBox.prototype.isLineBreak = function (ch) {
         if (this.linews) {
             return false;
-        }
-        else {
+        } else {
             return ch === '\r' || ch === '\n';
         }
     };
@@ -304,6 +320,7 @@ var Vips = /** @class */ (function () {
         this.sizeThresholdHeight = 400;
         this._filename = filename;
     }
+
     /**
      * Sets permitted degree of coherence (pDoC) value.
      * @param value pDoC value.
@@ -312,16 +329,14 @@ var Vips = /** @class */ (function () {
         if (value <= 0 || value > 11) {
             console.error("pDoC value must be between 1 and 11! Not " + value + "!");
             return;
-        }
-        else {
+        } else {
             this._pDoC = value;
         }
     };
     Vips.prototype.setOutputFileName = function (filename) {
         if (!(filename === "")) {
             this._filename = filename;
-        }
-        else {
+        } else {
             console.log("Invalid filename!");
         }
     };
@@ -345,8 +360,7 @@ var Vips = /** @class */ (function () {
                     // visual structure construction
                     constructor.setVipsBlocks(vipsBlocks);
                     constructor.setPageSize(pageWidth, pageHeight);
-                }
-                else {
+                } else {
                     vipsBlocks = vipsParser.getVipsBlocks();
                     constructor.updateVipsBlocks(vipsBlocks);
                 }
@@ -377,8 +391,7 @@ var Vips = /** @class */ (function () {
             constructor.normalizeSeparatorsMinMax();
             var vipsOutput = new VipsOutput(this._filename, this._pDoC);
             return vipsOutput.writeJSON(constructor.getVisualStructure());
-        }
-        catch (Error) {
+        } catch (Error) {
             console.error("Something's wrong!");
             console.error(Error.message);
             console.error(Error.stack);
@@ -434,6 +447,7 @@ var VipsBlock = /** @class */ (function () {
             this.addChild(node);
         }
     }
+
     /**
      * Sets block as visual block
      * @param isVisualBlock Value
@@ -564,8 +578,7 @@ var VipsBlock = /** @class */ (function () {
     VipsBlock.prototype.getElementBox = function () {
         if (this._box instanceof ElementBox) {
             return this._box;
-        }
-        else {
+        } else {
             return null;
         }
     };
@@ -627,13 +640,11 @@ var VipsBlock = /** @class */ (function () {
         if (backgroundColor.length === 0) {
             if (element.parentNode != null && !(element.tagName === "body")) {
                 this.findBgColor(element.parentNode);
-            }
-            else {
+            } else {
                 this._bgColor = "#ffffff";
                 return;
             }
-        }
-        else {
+        } else {
             this._bgColor = backgroundColor;
             return;
         }
@@ -648,8 +659,7 @@ var VipsBlock = /** @class */ (function () {
         }
         if (this.getBox() instanceof TextBox) {
             this._bgColor = "#ffffff";
-        }
-        else {
+        } else {
             this._bgColor = window.getComputedStyle(this.getElementBox().getElement()).getPropertyValue("background-color");
         }
         if (this._bgColor.length === 0) {
@@ -664,8 +674,7 @@ var VipsBlock = /** @class */ (function () {
     VipsBlock.prototype.setSourceIndex = function (node) {
         if (!(this.getBox().getNode() == node)) {
             this._tmpSrcIndex++;
-        }
-        else {
+        } else {
             this._sourceIndex = this._tmpSrcIndex;
         }
         for (var i = 0; i < node.childNodes.length; i++) {
@@ -687,6 +696,7 @@ var VipsOutput = /** @class */ (function () {
         this._id = id;
         this.setPDoC(pDoC);
     }
+
     VipsOutput.prototype.writeVisualJSONBlocks = function (segmentations, visualStructure) {
         var multiPolygonSet = new Array();
         var multiPolygon = new Array();
@@ -714,7 +724,12 @@ var VipsOutput = /** @class */ (function () {
             var child = _a[_i];
             this.writeVisualJSONBlocks(boxes, child);
         }
-        return JSON.stringify({ "id": this._id, "height": window.innerHeight, "width": window.innerWidth, "segmentations": { "vips": boxes } });
+        return JSON.stringify({
+            "id": this._id,
+            "height": window.innerHeight,
+            "width": window.innerWidth,
+            "segmentations": {"vips": boxes}
+        });
     };
     /**
      * Sets permitted degree of coherence pDoC
@@ -724,8 +739,7 @@ var VipsOutput = /** @class */ (function () {
         if (pDoC <= 0 || pDoC > 11) {
             console.error("pDoC value must be between 1 and 11! Not " + pDoC + "!");
             return;
-        }
-        else {
+        } else {
             this._pDoC = pDoC;
         }
     };
@@ -757,6 +771,7 @@ var VipsParser = /** @class */ (function () {
         this._pageWidth = window.innerWidth;
         this._pageHeight = window.innerHeight;
     }
+
     /**
      * Starts visual page segmentation on given page
      */
@@ -816,8 +831,7 @@ var VipsParser = /** @class */ (function () {
                     this.divideVipsBlockTree(vipsBlockChild);
                 }
             }
-        }
-        else {
+        } else {
             if (vipsBlock.isDividable()) {
                 vipsBlock.setIsVisualBlock(true);
                 vipsBlock.setDoC(11);
@@ -903,8 +917,7 @@ var VipsParser = /** @class */ (function () {
     VipsParser.prototype.isValidNode = function (node) {
         if (node.getElement().clientHeight > 0 && node.getElement().clientWidth > 0) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     };
@@ -990,8 +1003,7 @@ var VipsParser = /** @class */ (function () {
                 this._cnt++;
             }
             return;
-        }
-        else {
+        } else {
             if (this.isValidNode(node)) {
                 this._cnt++;
             }
@@ -1010,8 +1022,7 @@ var VipsParser = /** @class */ (function () {
                 this._currentVipsBlock.setIsVisualBlock(true);
                 this._currentVipsBlock.setDoC(8);
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
         }
@@ -1048,20 +1059,15 @@ var VipsParser = /** @class */ (function () {
         var retVal = false;
         if (!node.isBlock()) {
             retVal = this.applyInlineTextNodeVipsRules(node);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "table") {
+        } else if (node.getNode().nodeName.toLowerCase() === "table") {
             retVal = this.applyTableNodeVipsRules(node);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "tr") {
+        } else if (node.getNode().nodeName.toLowerCase() === "tr") {
             retVal = this.applyTrNodeVipsRules(node);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "td") {
+        } else if (node.getNode().nodeName.toLowerCase() === "td") {
             retVal = this.applyTdNodeVipsRules(node);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "p") {
+        } else if (node.getNode().nodeName.toLowerCase() === "p") {
             retVal = this.applyPNodeVipsRules(node);
-        }
-        else {
+        } else {
             retVal = this.applyOtherNodeVipsRules(node);
         }
         return retVal;
@@ -1236,8 +1242,7 @@ var VipsParser = /** @class */ (function () {
                 this._currentVipsBlock.setIsDividable(false);
                 return true;
             }
-        }
-        else {
+        } else {
             return false;
         }
     };
@@ -1346,8 +1351,7 @@ var VipsParser = /** @class */ (function () {
         if (node.getSubBoxList().length === 1) {
             if (node.getSubBox(0).getNode().nodeName.toLowerCase() === "em") {
                 this._currentVipsBlock.setDoC(11);
-            }
-            else {
+            } else {
                 this._currentVipsBlock.setDoC(10);
             }
             return true;
@@ -1359,8 +1363,7 @@ var VipsParser = /** @class */ (function () {
             var childFontSize = void 0;
             if (childNode.getNode().nodeType === Node.TEXT_NODE) {
                 childFontSize = Number(window.getComputedStyle(childNode.getNode().parentElement, null).getPropertyValue('font-size'));
-            }
-            else if (childNode.getNode().nodeType === Node.ELEMENT_NODE) {
+            } else if (childNode.getNode().nodeType === Node.ELEMENT_NODE) {
                 childFontSize = Number(window.getComputedStyle(childNode.getNode(), null).getPropertyValue('font-size'));
             }
             if (childNode instanceof TextBox) {
@@ -1368,12 +1371,10 @@ var VipsParser = /** @class */ (function () {
                     if (fontSize != childFontSize) {
                         this._currentVipsBlock.setDoC(9);
                         break;
-                    }
-                    else {
+                    } else {
                         this._currentVipsBlock.setDoC(10);
                     }
-                }
-                else {
+                } else {
                     fontSize = childFontSize;
                 }
                 continue;
@@ -1386,13 +1387,11 @@ var VipsParser = /** @class */ (function () {
                 if (window.getComputedStyle(child.getElement()).getPropertyValue("font-weight").toString() === fontWeight
                     && childFontSize === fontSize) {
                     this._currentVipsBlock.setDoC(10);
-                }
-                else {
+                } else {
                     this._currentVipsBlock.setDoC(9);
                     break;
                 }
-            }
-            else {
+            } else {
                 fontWeight = window.getComputedStyle(child.getElement()).getPropertyValue("font-weight").toString();
                 fontSize = childFontSize;
             }
@@ -1537,14 +1536,11 @@ var VipsParser = /** @class */ (function () {
         this._currentVipsBlock.setIsDividable(false);
         if (node.getNode().nodeName.toLowerCase() === "Xdiv") {
             this._currentVipsBlock.setDoC(7);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "code") {
+        } else if (node.getNode().nodeName.toLowerCase() === "code") {
             this._currentVipsBlock.setDoC(7);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "div") {
+        } else if (node.getNode().nodeName.toLowerCase() === "div") {
             this._currentVipsBlock.setDoC(5);
-        }
-        else {
+        } else {
             this._currentVipsBlock.setDoC(8);
         }
         return true;
@@ -1585,8 +1581,7 @@ var VipsParser = /** @class */ (function () {
         }
         if (node.getNode().nodeName.toLowerCase() === "a") {
             this._currentVipsBlock.setDoC(11);
-        }
-        else {
+        } else {
             this._currentVipsBlock.setDoC(8);
         }
         return true;
@@ -1638,20 +1633,15 @@ var VipsParser = /** @class */ (function () {
         this._currentVipsBlock.setIsVisualBlock(true);
         if (node.getNode().nodeName.toLowerCase() === "Xdiv") {
             this._currentVipsBlock.setDoC(7);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "li") {
+        } else if (node.getNode().nodeName.toLowerCase() === "li") {
             this._currentVipsBlock.setDoC(8);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "span") {
+        } else if (node.getNode().nodeName.toLowerCase() === "span") {
             this._currentVipsBlock.setDoC(8);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "sup") {
+        } else if (node.getNode().nodeName.toLowerCase() === "sup") {
             this._currentVipsBlock.setDoC(8);
-        }
-        else if (node.getNode().nodeName.toLowerCase() === "img") {
+        } else if (node.getNode().nodeName.toLowerCase() === "img") {
             this._currentVipsBlock.setDoC(8);
-        }
-        else {
+        } else {
             this._currentVipsBlock.setDoC(333);
         }
         return true;
@@ -1680,8 +1670,7 @@ var VipsParser = /** @class */ (function () {
         if (vipsBlock.getBox().getNode().isEqualNode(node)) {
             this._tempVipsBlock = vipsBlock;
             return;
-        }
-        else {
+        } else {
             for (var _i = 0, _a = vipsBlock.getChildren(); _i < _a.length; _i++) {
                 var vipsBlockChild = _a[_i];
                 this.findPreviousSiblingNodeVipsBlock(node, vipsBlockChild);
@@ -1715,6 +1704,7 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
         this._verticalSeparators = new Array();
         this._visualBlocks = new Array();
     }
+
     VipsSeparatorNonGraphicsDetector.prototype.fillPoolWithBlocks = function (vipsBlock) {
         if (vipsBlock.isVisualBlock()) {
             this._visualBlocks.push(vipsBlock);
@@ -1831,8 +1821,7 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
                                     separator.endPoint = blockStart - 1;
                                     nextSeparator.startPoint = blockEnd + 1;
                                     break;
-                                }
-                                else {
+                                } else {
                                     var tempSeparators = new Array();
                                     for (var _j = 0, _k = this._verticalSeparators; _j < _k.length; _j++) {
                                         var sep = _k[_j];
@@ -1942,8 +1931,7 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
                                     separator.endPoint = blockStart - 1;
                                     nextSeparator.startPoint = blockEnd + 1;
                                     break;
-                                }
-                                else {
+                                } else {
                                     var tempSeparators = new Array();
                                     for (var _j = 0, _k = this._horizontalSeparators; _j < _k.length; _j++) {
                                         var sep = _k[_j];
@@ -2066,7 +2054,9 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
      * @param separators Separators
      */
     VipsSeparatorNonGraphicsDetector.prototype.sortSeparatorsByWeight = function (separators) {
-        separators.sort(function (a, b) { return a.weight - b.weight; });
+        separators.sort(function (a, b) {
+            return a.weight - b.weight;
+        });
     };
     /**
      * Computes weights for vertical separators.
@@ -2111,14 +2101,11 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
         }
         if (width > 25 && width <= 35) {
             separator.weight += 6;
-        }
-        else if (width > 15 && width <= 25) {
+        } else if (width > 15 && width <= 25) {
             separator.weight += 4;
-        }
-        else if (width > 8 && width <= 15) {
+        } else if (width > 8 && width <= 15) {
             separator.weight += 2;
-        }
-        else {
+        } else {
             separator.weight += 1;
         }
     };
@@ -2131,8 +2118,7 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
         var overlappedElements = new Array();
         if (horizontal) {
             this.findHorizontalOverlappedElements(separator, overlappedElements);
-        }
-        else {
+        } else {
             this.findVerticalOverlappedElements(separator, overlappedElements);
         }
         if (overlappedElements.length === 0) {
@@ -2210,8 +2196,7 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
         var bottomAdjacentElements = new Array();
         if (horizontal) {
             this.findHorizontalAdjacentBlocks(separator, topAdjacentElements, bottomAdjacentElements);
-        }
-        else {
+        } else {
             this.findVerticalAdjacentBlocks(separator, topAdjacentElements, bottomAdjacentElements);
         }
         if (topAdjacentElements.length < 1 || bottomAdjacentElements.length < 1) {
@@ -2312,8 +2297,7 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
                         separator.weight += 2;
                         weightIncreased = true;
                         break;
-                    }
-                    else {
+                    } else {
                         var topFontWeight = window.getComputedStyle(top_2.getElementBox().getElement()).getPropertyValue('font-weight');
                         var bottomFontWeight = window.getComputedStyle(bottom.getElementBox().getElement()).getPropertyValue('font-weight');
                         if (!(topFontWeight === bottomFontWeight)) {
@@ -2422,15 +2406,16 @@ var VipsSeparatorNonGraphicsDetector = /** @class */ (function () {
 var VipsTester = /** @class */ (function () {
     function VipsTester() {
     }
+
     VipsTester.prototype.main = function (filename, doc) {
         try {
             var vips = new Vips(filename);
+            console.warn("pwn");
             // set permitted degree of coherence
             vips.setPredefinedDoC(doc);
             // start segmentation on page
             return vips.performSegmentation();
-        }
-        catch (Error) {
+        } catch (Error) {
             console.error(Error.message);
             console.error(Error.stack);
         }
@@ -2469,6 +2454,7 @@ var VisualStructure = /** @class */ (function () {
         this._horizontalSeparators = new Array();
         this._verticalSeparators = new Array();
     }
+
     /**
      * @return Nested blocks in structure
      */
@@ -2721,6 +2707,7 @@ var VisualStructureConstructor = /** @class */ (function () {
             this._vipsBlocks = vipsBlocks;
         }
     }
+
     /**
      * Sets Permitted Degree of Coherence
      * @param pDoC Permitted Degree of Coherence
@@ -2729,8 +2716,7 @@ var VisualStructureConstructor = /** @class */ (function () {
         if (pDoC <= 0 || pDoC > 11) {
             console.error("pDoC value must be between 1 and 11! Not " + pDoC + "!");
             return;
-        }
-        else {
+        } else {
             this._pDoC = pDoC;
         }
     };
@@ -2745,8 +2731,7 @@ var VisualStructureConstructor = /** @class */ (function () {
             this.constructHorizontalVisualStructure();
             this.constructVerticalVisualStructure();
             this.constructHorizontalVisualStructure();
-        }
-        else {
+        } else {
             // and now we are trying to find horizontal before vertical separators
             this.constructHorizontalVisualStructure();
             this.constructVerticalVisualStructure();
@@ -2781,8 +2766,7 @@ var VisualStructureConstructor = /** @class */ (function () {
                 separator.setRightDown(this._visualStructure.getX() + this._visualStructure.getWidth(), separator.endPoint);
             }
             this.constructWithHorizontalSeparators(this._visualStructure);
-        }
-        else {
+        } else {
             var listStructures = new Array();
             this.findListVisualStructures(this._visualStructure, listStructures);
             for (var _b = 0, listStructures_1 = listStructures; _b < listStructures_1.length; _b++) {
@@ -2826,8 +2810,7 @@ var VisualStructureConstructor = /** @class */ (function () {
                 separator.setRightDown(separator.endPoint, this._visualStructure.getY() + this._visualStructure.getHeight());
             }
             this.constructWithVerticalSeparators(this._visualStructure);
-        }
-        else {
+        } else {
             var listStructures = new Array();
             this.findListVisualStructures(this._visualStructure, listStructures);
             for (var _b = 0, listStructures_2 = listStructures; _b < listStructures_2.length; _b++) {
@@ -2875,8 +2858,7 @@ var VisualStructureConstructor = /** @class */ (function () {
                 bottomVisualStructure.setWidth(actualStructure.getWidth());
                 actualStructure.addChild(bottomVisualStructure);
                 nestedBlocks = actualStructure.getNestedBlocks();
-            }
-            else {
+            } else {
                 var oldStructure = null;
                 for (var _b = 0, _c = actualStructure.getChildrenVisualStructures(); _b < _c.length; _b++) {
                     var childVisualStructure = _c[_b];
@@ -2913,8 +2895,7 @@ var VisualStructureConstructor = /** @class */ (function () {
                 if (vipsBlock.getElementBox() != null) {
                     if (vipsBlock.getElementBox().getElement().getBoundingClientRect().top <= separator.startPoint) {
                         topVisualStructure.addNestedBlock(vipsBlock);
-                    }
-                    else {
+                    } else {
                         bottomVisualStructure.addNestedBlock(vipsBlock);
                     }
                 }
@@ -2972,8 +2953,7 @@ var VisualStructureConstructor = /** @class */ (function () {
                 rightVisualStructure.setWidth((actualStructure.getWidth() + actualStructure.getX()) - separator.endPoint - 1);
                 actualStructure.addChild(rightVisualStructure);
                 nestedBlocks = actualStructure.getNestedBlocks();
-            }
-            else {
+            } else {
                 var oldStructure = null;
                 for (var _b = 0, _c = actualStructure.getChildrenVisualStructures(); _b < _c.length; _b++) {
                     var childVisualStructure = _c[_b];
@@ -3010,8 +2990,7 @@ var VisualStructureConstructor = /** @class */ (function () {
                 if (vipsBlock.getElementBox() != null) {
                     if (vipsBlock.getElementBox().getElement().getBoundingClientRect().left <= separator.startPoint) {
                         leftVisualStructure.addNestedBlock(vipsBlock);
-                    }
-                    else {
+                    } else {
                         rightVisualStructure.addNestedBlock(vipsBlock);
                     }
                 }
@@ -3059,7 +3038,7 @@ var VisualStructureConstructor = /** @class */ (function () {
     /**
      * Finds all visual blocks in VipsBlock structure
      * @param vipsBlock Actual VipsBlock
-     * @param results	Results
+     * @param results    Results
      */
     VisualStructureConstructor.prototype.findVisualBlocks = function (vipsBlock, results) {
         if (vipsBlock.isVisualBlock()) {
@@ -3095,7 +3074,7 @@ var VisualStructureConstructor = /** @class */ (function () {
     };
     /**
      * Replaces given old blocks with given new ones
-     * @param oldBlocks	List of old blocks
+     * @param oldBlocks    List of old blocks
      * @param newBlocks List of new blocks
      * @param actualStructure Actual Structure
      * @param pathStructures Path from structure to root of the structure
@@ -3441,7 +3420,9 @@ var VisualStructureConstructor = /** @class */ (function () {
         var maxSep = new Separator(0, this._pageHeight);
         separators.push(maxSep);
         maxSep.weight = 40;
-        separators.sort(function (a, b) { return a.weight - b.weight; });
+        separators.sort(function (a, b) {
+            return a.weight - b.weight;
+        });
         var minWeight = separators[0].weight;
         var maxWeight = separators[separators.length - 1].weight;
         for (var _i = 0, separators_2 = separators; _i < separators_2.length; _i++) {
