@@ -1,6 +1,19 @@
 /**
  * Based on CSSBox' "Box" class with minimal set of features to support VIPS.
  */
+
+
+const vipsIdAttributeName = "vips_id"
+const setAttributeVipsId = (element, id) => {
+    element.setAttribute(vipsIdAttributeName, id);
+    const children = Array.from(element.children);
+    if (children && children.length) {
+        children.forEach((childElement, childIndex) => {
+            setAttributeVipsId(childElement, `${id}-${childIndex}`)
+        })
+    }
+}
+
 var Box = /** @class */ (function () {
     function Box(node) {
         this.node = node;
@@ -344,6 +357,7 @@ var Vips = /** @class */ (function () {
      * Performs page segmentation.
      */
     Vips.prototype.performSegmentation = function () {
+        Array.from(document.getElementsByTagName("body")[0].children).forEach(setAttributeVipsId)
         try {
             var numberOfIterations = 10;
             var pageWidth = window.innerWidth;
@@ -390,6 +404,7 @@ var Vips = /** @class */ (function () {
             }
             constructor.normalizeSeparatorsMinMax();
             var vipsOutput = new VipsOutput(this._filename, this._pDoC);
+            // return JSON.stringify(constructor.getExtractedHtml());
             return vipsOutput.writeJSON(constructor.getVisualStructure());
         } catch (Error) {
             console.error("Something's wrong!");
@@ -701,6 +716,7 @@ var VipsOutput = /** @class */ (function () {
         var multiPolygonSet = new Array();
         var multiPolygon = new Array();
         var polygon = new Array();
+        var html = new Array();
         var start = new Array(Math.round(visualStructure.getX()), Math.round(visualStructure.getY()));
         polygon.push(start);
         polygon.push(new Array(Math.round(visualStructure.getX()), Math.round(visualStructure.getY() + visualStructure.getHeight())));
@@ -714,16 +730,34 @@ var VipsOutput = /** @class */ (function () {
             // continue segmenting
             for (var _i = 0, _a = visualStructure.getChildrenVisualStructures(); _i < _a.length; _i++) {
                 var child = _a[_i];
+                console.warn("CHILD");
+                var nestedBlocks = child.getNestedBlocks();
+                for (var i = 0; i < nestedBlocks.length; i++) {
+                    var elementBox = nestedBlocks[i].getElementBox();
+                    if (elementBox) {
+                        // console.warn("------------");
+                        // const nestedElementTexBoxes = elementBox.getSubBoxList();
+                        // console.warn(JSON.stringify(elementBox.getElement().outerHTML, null, 2));
+                        html.push(JSON.stringify(elementBox.getElement().outerHTML));
+                        // for (let j = 0; j < nestedElementTexBoxes; j++) {
+                        //     console.warn(nestedElementTexBoxes[j].getText())
+                        // }
+                    }
+                }
+                // multiPolygonSet.push(html);
                 this.writeVisualJSONBlocks(segmentations, child);
             }
         } // else "stop" segmentation
     };
     VipsOutput.prototype.writeJSON = function (visualStructure) {
         var boxes = new Array();
+        // var children = new Array();
         for (var _i = 0, _a = visualStructure.getChildrenVisualStructures(); _i < _a.length; _i++) {
             var child = _a[_i];
             this.writeVisualJSONBlocks(boxes, child);
         }
+
+
         return JSON.stringify({
             "id": this._id,
             "height": window.innerHeight,
@@ -3034,6 +3068,16 @@ var VisualStructureConstructor = /** @class */ (function () {
     VisualStructureConstructor.prototype.getVisualStructure = function () {
         return this._visualStructure;
     };
+
+    VisualStructureConstructor.prototype.getExtractedHtml = function () {
+        return this._visualBlocks.map((vipsBlock) => {
+            const elementVipsId = vipsBlock.getElementBox().getElement().getAttribute(vipsIdAttributeName);
+            const selectorString = `[${vipsIdAttributeName}='${elementVipsId}']`;
+            return document.querySelector(selectorString).outerHTML;
+        })
+    };
+
+
     /**
      * Finds all visual blocks in VipsBlock structure
      * @param vipsBlock Actual VipsBlock
