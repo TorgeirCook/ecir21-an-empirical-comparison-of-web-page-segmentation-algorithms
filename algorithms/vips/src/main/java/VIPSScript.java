@@ -67,7 +67,7 @@ public class VIPSScript extends InteractionScript {
 
         LOG.info("Loading VIPS script");
         this.vipsJs = new Scanner(scriptDirectory.resolve("vips.js")).useDelimiter("\\A").next()
-                + "\nvar tester = new VipsTester();\nreturn tester.main(\"TBFWID\"," + this.pDoC + ");";
+                + "\nvar tester = new VipsTester();\n; var callback = arguments[0]; tester.main(\"TBFWID\"," + this.pDoC + ", callback);";
     }
 
     //////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ public class VIPSScript extends InteractionScript {
             throws Throwable {
         LOG.info("Executing VIPS");
         JavascriptExecutor jsExecutor = (JavascriptExecutor) window;
-        String json = (String) jsExecutor.executeScript(this.vipsJs);
+        String json = (String) jsExecutor.executeAsyncScript(this.vipsJs);
 
         List<LogEntry> logEntries = window.manage().logs().get(LogType.BROWSER).getAll();
         for (LogEntry entry : logEntries) {

@@ -404,7 +404,10 @@ var Vips = /** @class */ (function () {
             }
             constructor.normalizeSeparatorsMinMax();
             var vipsOutput = new VipsOutput(this._filename, this._pDoC);
-            // return JSON.stringify(constructor.getExtractedHtml());
+            constructor.getExtractedHtml().forEach((htmlStr) => {
+                console.warn(htmlStr);
+                console.warn("------------------");
+            })
             return vipsOutput.writeJSON(constructor.getVisualStructure());
         } catch (Error) {
             console.error("Something's wrong!");
@@ -2441,17 +2444,20 @@ var VipsTester = /** @class */ (function () {
     function VipsTester() {
     }
 
-    VipsTester.prototype.main = function (filename, doc) {
-        try {
-            var vips = new Vips(filename);
-            // set permitted degree of coherence
-            vips.setPredefinedDoC(doc);
-            // start segmentation on page
-            return vips.performSegmentation();
-        } catch (Error) {
-            console.error(Error.message);
-            console.error(Error.stack);
-        }
+    VipsTester.prototype.main = function (filename, doc, callback) {
+        setTimeout(() => {
+            try {
+                var vips = new Vips(filename);
+                // set permitted degree of coherence
+                vips.setPredefinedDoC(doc);
+                // start segmentation on page
+                var jsonRet = vips.performSegmentation();
+                callback(jsonRet);
+            } catch (Error) {
+                console.error(Error.message);
+                console.error(Error.stack);
+            }
+        }, 30000);
     };
     return VipsTester;
 }());
